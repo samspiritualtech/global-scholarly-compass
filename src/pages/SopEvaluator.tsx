@@ -21,26 +21,46 @@ const SopEvaluator = () => {
     };
   } | null>(null);
 
-  const handleSubmit = async (data: { 
-    text: string; 
-    university: string; 
-    program: string; 
+  const handleSubmit = async (data: {
+    text: string;
+    university: string;
+    program: string;
     file?: File;
   }) => {
     setIsLoading(true);
-    
+  
     try {
-      // This would be replaced with an actual API call in production
-      const result = await evaluateSop(data);
+      const response = await fetch('https://agent-prod.studio.lyzr.ai/v3/inference/chat/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'sk-default-mN5Stww5AFaPAVfPBXp4p5CjF6pYbsID'  // <-- YOUR API KEY HERE
+        },
+        body: JSON.stringify({
+          user_id: "gunjanbajaj246@gmail.com",    // or dynamically add your user id
+          agent_id: "680dcbc41358b393850cd2a",    // this agent id
+          session_id: "680dcbc41358b393850cd2a",  // this session id
+          message: data.text                     // pass your SOP text here
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Lyzr API error: ${response.statusText}`);
+      }
+  
+      const result = await response.json();
+      
       setEvaluationResult(result);
-      toast.success("SOP evaluation complete!");
+      toast.success('SOP evaluation complete!');
     } catch (error) {
-      console.error("Evaluation error:", error);
-      toast.error("Failed to evaluate SOP. Please try again.");
+      console.error('Evaluation error:', error);
+      toast.error('Failed to evaluate SOP. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+  
+  
 
   const handleReset = () => {
     setEvaluationResult(null);

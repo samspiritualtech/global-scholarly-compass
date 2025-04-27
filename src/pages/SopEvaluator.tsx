@@ -28,8 +28,16 @@ const SopEvaluator = () => {
     file?: File;
   }) => {
     setIsLoading(true);
+    console.log("📝 SOP submission data:", {
+      textLength: data.text.length,
+      university: data.university,
+      program: data.program,
+      hasFile: !!data.file
+    });
   
     try {
+      console.log("🔄 Calling Lyzr API...");
+      
       const response = await fetch('https://agent-prod.studio.lyzr.ai/v3/inference/chat/', {
         method: 'POST',
         headers: {
@@ -44,25 +52,28 @@ const SopEvaluator = () => {
         })
       });
   
+      console.log("✅ API Response received, status:", response.status);
+      
       if (!response.ok) {
         throw new Error(`Lyzr API error: ${response.statusText}`);
       }
   
       const result = await response.json();
+      console.log("📊 Evaluation result:", result);
       
       setEvaluationResult(result);
       toast.success('SOP evaluation complete!');
     } catch (error) {
-      console.error('Evaluation error:', error);
+      console.error('❌ Evaluation error:', error);
       toast.error('Failed to evaluate SOP. Please try again.');
     } finally {
       setIsLoading(false);
+      console.log("🏁 SOP evaluation process completed");
     }
   };
   
-  
-
   const handleReset = () => {
+    console.log("🔄 Resetting SOP evaluation");
     setEvaluationResult(null);
   };
 

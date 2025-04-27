@@ -37,14 +37,58 @@ const ScholarshipFinder = () => {
     
     try {
       // This would be replaced with an actual API call in production
-      const results = await findScholarships(data);
-      setSearchResults(results);
-      
-      if (results.length === 0) {
-        toast.info("No scholarships found matching your criteria. Try broadening your search.");
-      } else {
-        toast.success(`Found ${results.length} scholarships!`);
-      }
+  // This would be replaced with an actual API call in production
+  const response = await fetch('https://agent-prod.studio.lyzr.ai/v3/inference/chat/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': 'sk-default-mN5Stww5AFaPAVfPBXp4p5CjF6pYbsID'
+    },
+    body: JSON.stringify({
+      user_id: "gunjanbajaj246@gmail.com",
+      agent_id: "680df1521358b3933850ceb3",
+      session_id: "680df1521358b3933850ceb3",
+      message: Find scholarships for University: ${data.university || 'Any'}, Program: ${data.program || 'Any'}, Country: ${data.country || 'Any'}, Degree Level: ${data.degreeLevel || 'Any'}, Minimum Amount: ${data.minAmount}
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(API error: ${response.statusText});
+  }
+
+  const result = await response.json();
+
+  const plainText = result?.message || ""; // Assuming the plain text comes inside 'message'
+
+  const scholarshipsArray = plainText
+    .split("\n")
+    .filter(line => line.trim() !== "")
+    .map((line, idx) => ({
+      id: idx.toString(),
+      title: line.substring(0, 50),
+      description: line,
+      amount: "Varies",
+      deadline: "Not specified",
+      link: "#"
+    }));
+
+  setSearchResults(scholarshipsArray);
+
+  if (scholarshipsArray.length === 0) {
+    toast.info("No scholarships found matching your criteria. Try broadening your search.");
+  } else {
+    toast.success(Found ${scholarshipsArray.length} scholarships!);
+  }
+  /// embedded API 
+  
+  // const results = await findScholarships(data);
+  // setSearchResults(results);
+  
+  // if (results.length === 0) {
+  //   toast.info("No scholarships found matching your criteria. Try broadening your search.");
+  // } else {
+  //   toast.success(Found ${results.length} scholarships!);
+  // }
     } catch (error) {
       console.error("Scholarship search error:", error);
       toast.error("Failed to search scholarships. Please try again.");

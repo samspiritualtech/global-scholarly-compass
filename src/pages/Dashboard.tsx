@@ -134,7 +134,7 @@ const Dashboard = () => {
             >
               <div className="space-y-2">
                 <p className="text-gray-600 dark:text-gray-400">
-                  You have 2 saved SOPs
+                  You have 4 saved SOPs
                 </p>
                 <ul className="space-y-1">
                   <li className="text-sm hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded">
